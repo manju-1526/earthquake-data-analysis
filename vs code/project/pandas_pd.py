@@ -8,6 +8,7 @@ from sqlalchemy import create_engine
 # %%
 url = "https://earthquake.usgs.gov/fdsnws/event/1/query"
 
+
 # %%
 start_year = datetime.now().year - 5 # last 5 years
 end_year = datetime.now().year
@@ -99,8 +100,8 @@ df.isnull().sum()
 
 # %%
 # convert datetime
-df["time"] = pd.to_datetime(df["time"], errors = "coerce")
-df["updated"] = pd.to_datetime(df["updated"], errors = "coerce")
+df["time"] = pd.to_datetime(df["time"], unit="ms", errors = "coerce")
+df["updated"] = pd.to_datetime(df["updated"], unit="ms", errors = "coerce")
 
 # %%
 # clean alert
@@ -174,15 +175,14 @@ df["strength_category"] = strength_category
 
 # %%
 import pymysql
-from urllib.parse import quote_plus
+
 
 # %%
-password = quote_plus("Guvi@123#")
 try:
     connection = pymysql.connect(
         host = "localhost",
         user = "root",
-        password = "Guvi@123#",
+        password = "Guvi123",
         port = 3306,
         database = "project",
         )
@@ -191,7 +191,7 @@ try:
 except Exception as e:
     print("connection failed:", e)
 
-engine = create_engine(f"mysql+pymysql://root:{password}@localhost:3306/project")
+engine = create_engine("mysql+pymysql://root:Guvi123@localhost:3306/project")
 with engine.connect() as conn:
     print("SQLAlchemy connected successfully!")
 
