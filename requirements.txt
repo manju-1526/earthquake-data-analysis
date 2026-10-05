@@ -1,1 +1,6 @@
-
+streamlit
+pandas
+pymysql
+sqlalchemy
+requests
+beautifulsoup4
