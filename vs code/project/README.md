@@ -44,6 +44,8 @@ The Streamlit dashboard retrieves the latest 5 years of earthquake data for anal
 
 The project dashboard is deployed using Streamlit Community Cloud.
 
+👉 [Open Live Earthquake Dashboard](https://earthquake-data-dashboard.streamlit.app/)
+
 📂 Project Structure
 earthquake-data-analysis/
 │
