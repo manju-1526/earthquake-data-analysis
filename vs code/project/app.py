@@ -82,7 +82,8 @@ try:
          df = df[df["place"] == selected_location]
 
     yearly_data = df.groupby("year").size().reset_index(name="earthquake_count")
-
+    
+     # Year-wise Earthquake Trend
     st.subheader("📈 Year-wise Earthquake Trend")
 
     st.line_chart(
@@ -104,7 +105,8 @@ try:
     top_10 = df.nlargest(10, "mag")[
         ["time", "mag", "place", "depth_km"]
     ]
-
+    st.dataframe(top_10, use_container_width=True) 
+    
      # Earthquake Depth Analysis
     st.subheader("🌍 Earthquake Depth Analysis")
 
@@ -158,17 +160,6 @@ try:
     alert_data = df["alert"].fillna("Unknown").value_counts()
 
     st.bar_chart(alert_data)
-
-    # 🌍 World Map
-    st.subheader("🗺️ Earthquake World Map")
-
-    map_data = df[["latitude", "longitude"]].dropna()
-
-    st.map(
-       map_data,
-       latitude="latitude",
-       longitude="longitude"
-   )
 
     # 💡 Key Insights
     st.subheader("💡 Key Insights")
