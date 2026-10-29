@@ -30,7 +30,6 @@ GitHub
 📅 Year-wise earthquake analysis
 📍 Location-based filtering
 📉 Magnitude distribution
-🌐 World map visualization
 📊 Monthly earthquake trend
 🔎 Magnitude vs depth analysis
 📥 CSV data download
