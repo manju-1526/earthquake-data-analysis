@@ -7,17 +7,8 @@ st.title("🌍 Earthquake Data Analysis Dashboard")
 
 st.write("Streamlit is working successfully!")
 
+engine = create_engine("mysql+pymysql://root:Guvi123@localhost:3306/project")
 
-connection_url = URL.create(
-    "mysql+pymysql",
-    username=st.secrets["mysql"]["user"],
-    password=st.secrets["mysql"]["password"],
-    host=st.secrets["mysql"]["host"],
-    port=st.secrets["mysql"]["port"],
-    database=st.secrets["mysql"]["database"]
-)
-
-engine = create_engine(connection_url)
 # Last 5 years data 
 query = """ SELECT * FROM EQ WHERE time >= DATE_SUB(NOW(), INTERVAL 5 YEAR) 
 ORDER BY time DESC """
@@ -33,9 +24,36 @@ try:
         max_value=10.0,
         value=0.0,
         step=0.1
-   )
+    )
 
     df = df[df["mag"] >= min_magnitude]
+    
+    # Year Filter
+    df["year"] = df["time"].dt.year
+    st.sidebar.header("📅 Year Filter")
+    
+    available_years = sorted(df["year"].unique(), reverse=True)
+    
+    selected_year = st.sidebar.selectbox(
+        "Select Year",
+        ["All"] + available_years
+    )
+    
+    if selected_year != "All":
+        df = df[df["year"] == selected_year]
+
+    # Location Filter
+    st.sidebar.header("📍 Location Filter")
+    
+    locations = sorted(df["place"].dropna().unique())
+    
+    selected_location = st.sidebar.selectbox(
+        "Select Location",
+        ["All"] + locations
+    )
+    
+    if selected_location != "All":
+        df = df[df["place"] == selected_location]
 
     st.subheader("🌍 Last 5 Years Earthquake Data")
    
@@ -53,44 +71,13 @@ try:
     col4.metric("🌊 Tsunami Events", tsunami_events)
 
     # Year-wise Earthquake Trend
-    df["year"] = df["time"].dt.year
-
-    # Year Filter
-    st.sidebar.header("📅 Year Filter")
-
-    available_years = sorted(df["year"].unique(), reverse=True)
-
-    selected_year = st.sidebar.selectbox(
-        "Select Year",
-        ["All"] + available_years
-   )
-
-    if selected_year != "All":
-        df = df[df["year"] == selected_year]
-
-    # Location Filter
-    st.sidebar.header("📍 Location Filter")
-
-    locations = sorted(df["place"].dropna().unique())
-
-    selected_location = st.sidebar.selectbox(
-        "Select Location",
-        ["All"] + locations
-    )
-
-    if selected_location != "All":
-         df = df[df["place"] == selected_location]
-
     yearly_data = df.groupby("year").size().reset_index(name="earthquake_count")
-    
-     # Year-wise Earthquake Trend
-    st.subheader("📈 Year-wise Earthquake Trend")
 
-    st.line_chart(
+    st.subheader("📊 Year-wise Earthquake Trend")
+    st.bar_chart(
         yearly_data.set_index("year")["earthquake_count"]
-    )
-
-     # Magnitude Distribution
+)
+    # Magnitude Distribution
     st.subheader("📊 Magnitude Distribution")
 
     magnitude_data = df["mag"].dropna()
@@ -106,6 +93,10 @@ try:
         ["time", "mag", "place", "depth_km"]
     ]
     st.dataframe(top_10, use_container_width=True) 
+
+    st.bar_chart(
+            top_10.set_index("place")["mag"]
+        )
     
      # Earthquake Depth Analysis
     st.subheader("🌍 Earthquake Depth Analysis")
@@ -176,21 +167,6 @@ try:
     st.write(f"🌍 Total Earthquakes: {total_earthquakes}")
     st.write(f"🌊 Tsunami Events: {tsunami_events}")
     st.write(f"📅 Most Active Year: {most_active_year}")
-
-    st.dataframe(df, use_container_width=True)
-
-    # Download CSV
-    csv = df.to_csv(index=False)
-
-    st.download_button(
-        label="📥 Download CSV",
-        data=csv,
-        file_name="earthquake_data.csv",
-        mime="text/csv"
-   )
-    st.bar_chart(
-        top_10.set_index("place")["mag"]
-    )
 
 except Exception as e:
     st.error(f"Data loading failed: {e}")

@@ -106,7 +106,7 @@ df["updated"] = pd.to_datetime(df["updated"], unit="ms", errors = "coerce")
 # %%
 # clean alert
 if "alert" in df.columns:
-    df["alert"] = (df["alert"].astype("string").str.lower().str.strip())
+    df["alert"] = (df["alert"].str.lower().str.strip())
 
 # %%
 # clean string columns
@@ -120,7 +120,7 @@ string_columns = [
 ]
 for col in string_columns:
     if col in df.columns:
-        df[col] = (df[col].astype("string").str.strip())
+        df[col] = (df[col].str.strip())
 
 # %%
 # Convert numeric columns
@@ -198,7 +198,7 @@ with engine.connect() as conn:
 # %%
 # insert df into sql
 df.to_sql(
-    name = "EQ",
+    name = "eq",
     con = engine,
     if_exists="replace",
     index = False
